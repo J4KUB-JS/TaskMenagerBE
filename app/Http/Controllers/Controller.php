@@ -13,17 +13,17 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, ValidatesRequests;
 
-    public function index()
+    public function index(Request $request)
     {
-        return ['tasks' => Task::all()];
+        return ['data' => Task::where('name', 'LIKE', '%'.$request['search'].'%')->orderBy('dueDate', $request['order'])->get()];
     }
 
     public function show(string $id)
     {
-        $task = Task::where('id', $id)->get();
+        $task = Task::where('id', $id)->first();
         $task->done = !$task->done;
         $task->save();
-        return ['task' => $task ];
+        return ['data' => $task ];
     }
 
     public function store(Request $request)
@@ -39,7 +39,7 @@ class Controller extends BaseController
             return ['error' => 'smth went wrong'];
         }
 
-        return ['task' => $newTask];
+        return ['data' => $newTask];
     }
 
     public function update(string $id, Request $request)
@@ -51,7 +51,7 @@ class Controller extends BaseController
         $task->done = $request->done;
         $task->save();
 
-        return ['task' => $task];
+        return ['data' => $task];
     }
 
     public function destroy(string $id)
